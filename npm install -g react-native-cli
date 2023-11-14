@@ -1,0 +1,55 @@
+import React from 'react';
+import { View, Text, Button } from 'react-native';
+import { LoginButton, AccessToken } from 'react-native-fbsdk';
+import { appleAuth } from '@invertase/react-native-apple-authentication';
+import AppleButton from 'react-native-apple-authentication';
+// Make sure to import the necessary dependencies
+
+const SocialSignIn = () => {
+    const handleGoogleSignIn = () => {
+        // handle Google sign in logic
+    };
+
+    const handleFacebookSignIn = (error: any, result: any) => {
+        if (error) {
+            console.log('Error:', error);
+        } else if (result.isCancelled) {
+            console.log('Facebook login cancelled');
+        } else {
+            AccessToken.getCurrentAccessToken().then((data) => {
+                console.log(data.accessToken.toString());
+            });
+        }
+    };
+
+    const handleAppleSignIn = async () => {
+        try {
+            const appleAuthRequestResponse = await appleAuth.performRequest({
+                requestedOperation: appleAuth.Operation.LOGIN,
+                requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+            });
+
+            console.log('appleAuthRequestResponse', appleAuthRequestResponse);
+        } catch (error) {
+            console.log('error', error);
+        }
+    };
+
+    const user = { name: 'John Doe' };
+
+    return (
+        <View>
+            <Button title="Sign in with Google" onPress={handleGoogleSignIn} />
+            <LoginButton onLoginFinished={handleFacebookSignIn} />
+            <AppleButton
+                style={{ width: 160, height: 45 }}
+                onPress={handleAppleSignIn}
+                buttonStyle={AppleButton.Style.WHITE}
+                buttonType={AppleButton.Type.SIGN_IN}
+            />
+            {user && <Text>{JSON.stringify(user)}</Text>}
+        </View>
+    );
+};
+
+export default SocialSignIn;
